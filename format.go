@@ -1,5 +1,9 @@
 package caskdb
 
+import (
+	"encoding/binary"
+)
+
 // format file provides encode/decode functions for serialisation and deserialisation
 // operations
 //
@@ -72,12 +76,25 @@ func NewKeyEntry(timestamp uint32, position uint32, totalSize uint32) KeyEntry {
 }
 
 func encodeHeader(timestamp uint32, keySize uint32, valueSize uint32) []byte {
-	panic("implement me")
+	// Allocate 12 bytes (4 bytes each for timestamp, keySize, and valueSize)
+	buf := make([]byte, 12)
+
+	// Encode each value into the byte slice using LittleEndian encoding
+	binary.LittleEndian.PutUint32(buf[0:4], timestamp)
+	binary.LittleEndian.PutUint32(buf[4:8], keySize)
+	binary.LittleEndian.PutUint32(buf[8:12], valueSize)
+
+	return buf
+
 }
 
 func decodeHeader(header []byte) (uint32, uint32, uint32) {
-	panic("implement me")
-}
+	// Decode each value from the byte slice using LittleEndian encoding
+	timestamp := binary.LittleEndian.Uint32(header[0:4])
+	keySize := binary.LittleEndian.Uint32(header[4:8])
+	valueSize := binary.LittleEndian.Uint32(header[8:12])
+
+	return timestamp, keySize, valueSize}
 
 func encodeKV(timestamp uint32, key string, value string) (int, []byte) {
 	panic("implement me")
